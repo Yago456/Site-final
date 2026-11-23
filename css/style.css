@@ -4,7 +4,7 @@
 :root {
     --bg-main: #0a0a0c;
     --bg-darker: #050505;
-    --primary-color: #e50914; /* Vermelho Netflix/Premium */
+    --primary-color: #e50914; 
     --primary-glow: rgba(229, 9, 20, 0.4);
     --text-main: #f0f0f0;
     --text-muted: #a0a0a0;
@@ -15,7 +15,6 @@
     --font-body: 'Outfit', sans-serif;
 }
 
-/* Reset Básico */
 * {
     margin: 0;
     padding: 0;
@@ -69,6 +68,14 @@ body {
 .hero-content {
     z-index: 2;
     padding: 20px;
+    opacity: 0; /* Controlado pelo JS */
+    transform: translateY(30px);
+    transition: all 1s ease;
+}
+
+.hero-content.active {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .badge {
@@ -93,7 +100,6 @@ body {
     background: linear-gradient(180deg, #fff 0%, #a0a0a0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: fadeUp 1s ease-out;
 }
 
 .lema {
@@ -101,7 +107,6 @@ body {
     color: var(--primary-color);
     font-style: italic;
     font-family: var(--font-heading);
-    animation: fadeUp 1.2s ease-out;
 }
 
 .lema i {
@@ -117,14 +122,13 @@ body {
     gap: 10px;
     color: var(--text-muted);
     font-size: 0.9rem;
-    animation: fadeUp 1.5s ease-out;
+    cursor: pointer;
 }
 
 .animate-bounce {
     animation: bounce 2s infinite;
 }
 
-/* Elementos Decorativos (Glow) */
 .glow-circle {
     position: absolute;
     width: 400px;
@@ -176,15 +180,14 @@ body {
 }
 
 /* =========================================
-   TIMELINE (Memórias)
+   TIMELINE (Memórias) - CORRIGIDO
    ========================================= */
 .timeline {
     position: relative;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
-/* Linha vertical da timeline */
 .timeline::before {
     content: '';
     position: absolute;
@@ -213,7 +216,6 @@ body {
     z-index: 2;
 }
 
-/* Cards Glassmorphism */
 .glass {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -230,27 +232,6 @@ body {
     transform: translateY(-5px) scale(1.01);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--primary-glow);
     border-color: rgba(229, 9, 20, 0.3);
-}
-
-@media (min-width: 768px) {
-    .timeline::before { left: 50%; transform: translateX(-50%); }
-    .timeline-item { width: 50%; padding-left: 0; padding-right: 40px; }
-    .timeline-item:nth-child(even) {
-        left: 50%;
-        padding-right: 0;
-        padding-left: 40px;
-    }
-    .timeline-dot {
-        left: auto;
-        right: -7px;
-    }
-    .timeline-item:nth-child(even) .timeline-dot {
-        left: -7px;
-        right: auto;
-    }
-    .glass { flex-direction: row; height: 250px; }
-    .card-img-wrapper { width: 40%; height: 100%; }
-    .card-content { width: 60%; padding: 30px; display: flex; flex-direction: column; justify-content: center;}
 }
 
 .card-img-wrapper {
@@ -274,6 +255,9 @@ body {
 
 .card-content {
     padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .tag {
@@ -296,6 +280,61 @@ body {
 .card-content p {
     color: var(--text-muted);
     font-size: 0.95rem;
+}
+
+/* Layout para Computador (Telas maiores que 768px) */
+@media (min-width: 768px) {
+    .timeline::before { left: 50%; transform: translateX(-50%); }
+    
+    .timeline-item { 
+        width: 50%; 
+        padding-left: 0; 
+        padding-right: 40px; 
+        margin-bottom: 60px;
+    }
+    
+    .timeline-item:nth-child(even) {
+        left: 50%;
+        padding-right: 0;
+        padding-left: 40px;
+    }
+    
+    .timeline-dot {
+        left: auto;
+        right: -7px;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-dot {
+        left: -7px;
+        right: auto;
+    }
+
+    .glass { 
+        flex-direction: row; 
+        min-height: 250px; /* CORREÇÃO AQUI */
+        height: auto;      /* CORREÇÃO AQUI */
+    }
+    
+    .timeline-item:nth-child(odd) .card-img-wrapper {
+        width: 45%;
+        height: auto; 
+        min-height: 250px;
+    }
+    
+    .timeline-item:nth-child(even) .glass {
+        flex-direction: row-reverse; 
+    }
+    
+    .timeline-item:nth-child(even) .card-img-wrapper {
+        width: 45%;
+        height: auto;
+        min-height: 250px;
+    }
+    
+    .card-content { 
+        width: 55%; 
+        padding: 30px; 
+    }
 }
 
 /* =========================================
@@ -352,7 +391,7 @@ body {
 .accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1); /* Animação premium */
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
     background: rgba(0,0,0,0.2);
 }
 
@@ -413,20 +452,14 @@ footer {
 }
 
 /* =========================================
-   ANIMAÇÕES (Keyframes e Scroll Reveal)
+   ANIMAÇÕES
    ========================================= */
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-15px); }
     60% { transform: translateY(-7px); }
 }
 
-/* Classe para o IntersectionObserver do JS */
 .reveal {
     opacity: 0;
     transform: translateY(50px);
