@@ -1,3 +1,6 @@
+// ============================================================
+// DADOS DAS REDAÇÕES
+// ============================================================
 const redacoes = [
     {
         id: 1,
@@ -85,3 +88,133 @@ const redacoes = [
         texto: "No conto O Retrato de Dorian Gray, de Oscar Wilde, o protagonista deseja que seu retrato envelheça em seu lugar, revelando uma obsessão pela aparência que acaba destruindo sua vida. Fora da ficção, a cultura fitness contemporânea tem se aproximado dessa lógica: a busca pela estética perfeita muitas vezes se sobrepõe ao verdadeiro bem-estar, resultando em transtornos de imagem corporal e práticas perigosas. Nesse sentido, é crucial debater se a cultura fitness promove saúde ou apenas reforça padrões estéticos inatingíveis. Sob essa ótica, percebe-se que as redes sociais intensificam a pressão por um corpo ideal, transformando a busca pela saúde em uma obsessão estética. Isso acontece porque os algoritmos priorizam conteúdos de corpos esculturais e rotinas intensas de exercícios, criando uma comparação constante e inalcançável. A socióloga Zygmunt Bauman alertava sobre como as relações líquidas da modernidade fazem com que o indivíduo esteja sempre insatisfeito, em uma busca eterna por algo que nunca será alcançado. Dessa forma, a cultura fitness deixa de ser sinônimo de saúde e se torna um mecanismo de exclusão, que marginaliza quem não se encaixa nos padrões. Além disso, o uso indiscriminado de suplementos e anabolizantes, impulsionado pela promessa de resultados rápidos, coloca em risco a saúde física e mental das pessoas. Segundo a Organização Mundial da Saúde, os transtornos alimentares e a dismorfia corporal têm crescido entre jovens, especialmente mulheres, o que evidencia a gravidade do problema. Portanto, é urgente repensar a cultura fitness. As escolas, em parceria com profissionais de saúde, devem promover campanhas educativas que valorizem a diversidade corporal e o bem-estar verdadeiro, além de alertar sobre os perigos da busca por padrões estéticos inatingíveis."
     }
 ];
+
+// ============================================================
+// FUNÇÕES DO SITE (Acordeão, Scroll, etc)
+// ============================================================
+
+function carregarRedacoes() {
+    const container = document.getElementById('lista-redacoes');
+    if (!container) return;
+    
+    redacoes.forEach((redacao) => {
+        const item = document.createElement('div');
+        item.classList.add('accordion-item');
+
+        const header = document.createElement('div');
+        header.classList.add('accordion-header');
+        header.innerHTML = `
+            <span>${redacao.titulo}</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        `;
+
+        const content = document.createElement('div');
+        content.classList.add('accordion-content');
+        content.innerHTML = `<p>${redacao.texto}</p>`;
+
+        item.appendChild(header);
+        item.appendChild(content);
+        container.appendChild(item);
+
+        header.addEventListener('click', () => {
+            const allHeaders = document.querySelectorAll('.accordion-header');
+            const allContents = document.querySelectorAll('.accordion-content');
+            
+            allHeaders.forEach((h, i) => {
+                if (h !== header && h.classList.contains('active')) {
+                    h.classList.remove('active');
+                    allContents[i].style.maxHeight = null;
+                }
+            });
+
+            header.classList.toggle('active');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    });
+}
+
+function initScrollReveal() {
+    const elementsToReveal = document.querySelectorAll('.timeline-item, .section-header, .accordion-container');
+    elementsToReveal.forEach(el => el.classList.add('reveal'));
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    elementsToReveal.forEach(el => {
+        if(el.getBoundingClientRect().top < window.innerHeight) {
+            el.classList.add('active');
+        } else {
+            observer.observe(el);
+        }
+    });
+}
+
+function initScrollEffects() {
+    const progressBar = document.getElementById('progress-bar');
+    const btnTop = document.getElementById('btn-top');
+
+    window.addEventListener('scroll', () => {
+        const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (window.scrollY / windowHeight) * 100;
+        if(progressBar) progressBar.style.width = scrolled + '%';
+
+        if (window.scrollY > 500) {
+            if(btnTop) btnTop.classList.add('show');
+        } else {
+            if(btnTop) btnTop.classList.remove('show');
+        }
+    });
+
+    if(btnTop) {
+        btnTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    const links = document.querySelectorAll('nav a, .scroll-down');
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if(targetId && targetId.startsWith('#')) {
+                e.preventDefault();
+                const targetSection = document.querySelector(targetId);
+                if(targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+}
+
+function init() {
+    carregarRedacoes();
+    initScrollEffects();
+    document.body.classList.add('js-loaded');
+
+    try {
+        initScrollReveal();
+    } catch (error) {
+        console.warn("IntersectionObserver falhou, mostrando tudo.", error);
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+    }
+
+    setTimeout(() => {
+        const hiddenElements = document.querySelectorAll('.reveal:not(.active)');
+        hiddenElements.forEach(el => el.classList.add('active'));
+    }, 1500);
+}
+
+window.addEventListener('DOMContentLoaded', init);
