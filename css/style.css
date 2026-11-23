@@ -65,17 +65,18 @@ body {
     overflow: hidden;
 }
 
+/* A classe .hero-content agora é visível por padrão (Fail-Safe) */
 .hero-content {
     z-index: 2;
     padding: 20px;
-    opacity: 0; /* Controlado pelo JS */
-    transform: translateY(30px);
+    opacity: 1; 
+    transform: translateY(0);
     transition: all 1s ease;
 }
 
-.hero-content.active {
-    opacity: 1;
-    transform: translateY(0);
+/* O JS adiciona a classe .js-loaded para animar */
+.js-loaded .hero-content {
+    animation: fadeUpHero 1s ease-out forwards;
 }
 
 .badge {
@@ -180,7 +181,7 @@ body {
 }
 
 /* =========================================
-   TIMELINE (Memórias) - CORRIGIDO
+   TIMELINE (Memórias)
    ========================================= */
 .timeline {
     position: relative;
@@ -226,6 +227,7 @@ body {
     transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
     display: flex;
     flex-direction: column;
+    height: 100%; /* Garante preenchimento */
 }
 
 .glass:hover {
@@ -258,6 +260,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    flex-grow: 1;
 }
 
 .tag {
@@ -311,8 +314,8 @@ body {
 
     .glass { 
         flex-direction: row; 
-        min-height: 250px; /* CORREÇÃO AQUI */
-        height: auto;      /* CORREÇÃO AQUI */
+        min-height: 250px; 
+        height: auto;      
     }
     
     .timeline-item:nth-child(odd) .card-img-wrapper {
@@ -452,7 +455,7 @@ footer {
 }
 
 /* =========================================
-   ANIMAÇÕES
+   ANIMAÇÕES (Fail-Safe)
    ========================================= */
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -460,6 +463,12 @@ footer {
     60% { transform: translateY(-7px); }
 }
 
+@keyframes fadeUpHero {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* O JS adiciona 'reveal' apenas se estiver seguro, e 'active' quando rolar */
 .reveal {
     opacity: 0;
     transform: translateY(50px);
@@ -467,6 +476,6 @@ footer {
 }
 
 .reveal.active {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
